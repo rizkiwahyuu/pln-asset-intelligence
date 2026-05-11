@@ -41,6 +41,8 @@ st.set_page_config(
 st.markdown(f"""
 <style>
   .stApp {{ background-color:{LIGHT_BG}; }}
+  .stApp p, .stApp label, .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6, .stApp span, .stApp div {{ color: black; }}
+  
   [data-testid="stSidebar"] {{
       background:linear-gradient(180deg,{PLN_BLUE} 0%,{PLN_BLUE2} 100%);
   }}
@@ -53,7 +55,7 @@ st.markdown(f"""
       padding:18px 28px; border-radius:12px; margin-bottom:18px;
       display:flex; align-items:center; gap:14px;
   }}
-  .pln-header h1 {{ color:white; margin:0; font-size:1.65rem; font-weight:800; }}
+  .pln-header h1 {{ color:white !important; margin:0; font-size:1.65rem; font-weight:800; }}
   .pln-header span {{ font-size:2.2rem; }}
   .kpi-card {{
       background:white; border-radius:12px; padding:20px 24px;
@@ -63,25 +65,25 @@ st.markdown(f"""
   .kpi-card.danger  {{ border-left-color:{DANGER}; }}
   .kpi-card.warning {{ border-left-color:{PLN_YELLOW}; }}
   .kpi-card.success {{ border-left-color:{SUCCESS}; }}
-  .kpi-value {{ font-size:2.1rem; font-weight:800; color:{PLN_BLUE}; }}
-  .kpi-label {{ font-size:.82rem; color:#222; margin-top:4px;
+  .kpi-value {{ font-size:2.1rem; font-weight:800; color:{PLN_BLUE} !important; }}
+  .kpi-label {{ font-size:.82rem; color:black !important; margin-top:4px;
                 font-weight:700; text-transform:uppercase; letter-spacing:.5px; }}
-  .kpi-sub   {{ font-size:.75rem; color:#555; }}
+  .kpi-sub   {{ font-size:.75rem; color:black !important; }}
   .section-card  {{ background:white; border-radius:12px; padding:20px;
                     box-shadow:0 2px 8px rgba(0,61,165,.09); margin-bottom:18px; }}
-  .section-title {{ font-size:1.05rem; font-weight:700; color:{PLN_BLUE};
+  .section-title {{ font-size:1.05rem; font-weight:700; color:{PLN_BLUE} !important;
                     border-bottom:2px solid {PLN_YELLOW};
                     padding-bottom:6px; margin-bottom:14px; }}
   [data-testid="stDataFrame"] {{ width:100% !important; }}
   [data-testid="stDataFrame"] iframe {{ min-height:480px; width:100% !important; }}
   .stButton > button {{
       background:linear-gradient(90deg,{PLN_BLUE},{PLN_BLUE2});
-      color:white; border:none; border-radius:8px;
+      color:white !important; border:none; border-radius:8px;
       padding:10px 28px; font-weight:700; font-size:1rem; transition:.2s;
   }}
   .stButton > button:hover {{
       background:linear-gradient(90deg,{PLN_YELLOW},#e0a800);
-      color:{PLN_BLUE}; transform:translateY(-1px);
+      color:{PLN_BLUE} !important; transform:translateY(-1px);
   }}
 </style>
 """, unsafe_allow_html=True)
@@ -96,7 +98,7 @@ def base_layout(h=300, **kw):
                 font=FONT, margin=dict(t=20, b=10, l=10, r=10), **kw)
 
 def pln_header(icon, title, subtitle=""):
-    sub = f'<p style="color:#dde;margin:0;font-size:.9rem">{subtitle}</p>' if subtitle else ''
+    sub = f'<p style="color:#dde !important;margin:0;font-size:.9rem">{subtitle}</p>' if subtitle else ''
     st.markdown(f"""
     <div class="pln-header"><span>{icon}</span>
       <div><h1>{title}</h1>{sub}</div>
