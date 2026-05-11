@@ -32,7 +32,7 @@ BLACK      = "black"
 # ══════════════════════════════════════════════════════════════════════════════
 st.set_page_config(
     page_title="PLN UPT Surabaya – Asset Intelligence",
-    page_icon="⚡",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -41,8 +41,7 @@ st.set_page_config(
 st.markdown(f"""
 <style>
   .stApp {{ background-color:{LIGHT_BG}; }}
-  .stApp p, .stApp label, .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6, .stApp span, .stApp div {{ color: black; }}
-  
+  .stApp, .stApp p, .stApp span, .stApp label, .stApp div, .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6, .stApp li {{ color: black; }}
   [data-testid="stSidebar"] {{
       background:linear-gradient(180deg,{PLN_BLUE} 0%,{PLN_BLUE2} 100%);
   }}
@@ -65,13 +64,13 @@ st.markdown(f"""
   .kpi-card.danger  {{ border-left-color:{DANGER}; }}
   .kpi-card.warning {{ border-left-color:{PLN_YELLOW}; }}
   .kpi-card.success {{ border-left-color:{SUCCESS}; }}
-  .kpi-value {{ font-size:2.1rem; font-weight:800; color:{PLN_BLUE} !important; }}
-  .kpi-label {{ font-size:.82rem; color:black !important; margin-top:4px;
+  .kpi-value {{ font-size:2.1rem; font-weight:800; color:{PLN_BLUE}; }}
+  .kpi-label {{ font-size:.82rem; color:black; margin-top:4px;
                 font-weight:700; text-transform:uppercase; letter-spacing:.5px; }}
-  .kpi-sub   {{ font-size:.75rem; color:black !important; }}
+  .kpi-sub   {{ font-size:.75rem; color:black; }}
   .section-card  {{ background:white; border-radius:12px; padding:20px;
                     box-shadow:0 2px 8px rgba(0,61,165,.09); margin-bottom:18px; }}
-  .section-title {{ font-size:1.05rem; font-weight:700; color:{PLN_BLUE} !important;
+  .section-title {{ font-size:1.05rem; font-weight:700; color:{PLN_BLUE};
                     border-bottom:2px solid {PLN_YELLOW};
                     padding-bottom:6px; margin-bottom:14px; }}
   [data-testid="stDataFrame"] {{ width:100% !important; }}
@@ -98,7 +97,7 @@ def base_layout(h=300, **kw):
                 font=FONT, margin=dict(t=20, b=10, l=10, r=10), **kw)
 
 def pln_header(icon, title, subtitle=""):
-    sub = f'<p style="color:#dde !important;margin:0;font-size:.9rem">{subtitle}</p>' if subtitle else ''
+    sub = f'<p style="color:#dde;margin:0;font-size:.9rem">{subtitle}</p>' if subtitle else ''
     st.markdown(f"""
     <div class="pln-header"><span>{icon}</span>
       <div><h1>{title}</h1>{sub}</div>
@@ -177,15 +176,15 @@ df = load_data()
 # SIDEBAR
 # ══════════════════════════════════════════════════════════════════════════════
 with st.sidebar:
-    st.markdown("## ⚡ PLN Asset Intelligence")
+    st.markdown("## PLN Asset Intelligence")
     st.markdown("**UPT Surabaya**")
     st.markdown("---")
 
     # Status model
-    model_src = "💾 Model: dari disk" if os.path.exists(MODEL_PATH) else "🔁 Model: baru dilatih"
+    model_src = "Model: dari disk" if os.path.exists(MODEL_PATH) else "Model: baru dilatih"
     st.caption(model_src)
     if os.path.exists(MODEL_PATH):
-        if st.button("🗑️ Hapus & Latih Ulang"):
+        if st.button("Hapus & Latih Ulang"):
             os.remove(MODEL_PATH)
             if os.path.exists(ENCODER_PATH):
                 os.remove(ENCODER_PATH)
@@ -194,13 +193,13 @@ with st.sidebar:
 
     st.markdown("---")
     all_gi = ['Semua GI'] + sorted(df['GI'].dropna().unique().tolist())
-    sel_gi = st.selectbox("🔍 Filter Gardu Induk", all_gi)
+    sel_gi = st.selectbox("Filter Gardu Induk", all_gi)
     st.markdown("---")
-    menu = st.radio("📋 Navigasi Modul:", [
-        "🏠 Dashboard Executive",
-        "📊 Visualisasi Data",
-        "🤖 Prediksi AI (ML)",
-        "📋 Data Inspeksi Lengkap",
+    menu = st.radio("Navigasi Modul:", [
+        "Dashboard Executive",
+        "Visualisasi Data",
+        "Prediksi AI (ML)",
+        "Data Inspeksi Lengkap",
     ])
     st.markdown("---")
     st.markdown("**Versi:** 3.0.0 | **Update:** Mei 2025")
@@ -212,8 +211,8 @@ color_map = {'Aman': SUCCESS, 'Waspada': PLN_YELLOW, 'Kritis': DANGER}
 # ══════════════════════════════════════════════════════════════════════════════
 # PAGE 1 – DASHBOARD EXECUTIVE
 # ══════════════════════════════════════════════════════════════════════════════
-if menu == "🏠 Dashboard Executive":
-    pln_header("⚡", "Dashboard Manajemen Aset Transmisi",
+if menu == "Dashboard Executive":
+    pln_header("", "Dashboard Manajemen Aset Transmisi",
                "Sistem Informasi Prediktif – PT PLN (Persero) UPT Surabaya")
 
     kritis  = (df_view['STATUS_RISIKO'] == 'Kritis').sum()
@@ -240,7 +239,7 @@ if menu == "🏠 Dashboard Executive":
     # ── Row 1 ──────────────────────────────────────────────────────────────────
     col1, col2 = st.columns([1, 2])
     with col1:
-        st.markdown('<div class="section-card"><div class="section-title">📌 Proporsi Status Risiko</div>',
+        st.markdown('<div class="section-card"><div class="section-title">Proporsi Status Risiko</div>',
                     unsafe_allow_html=True)
         fig = px.pie(df_view, names='STATUS_RISIKO', color='STATUS_RISIKO',
                      color_discrete_map=color_map, hole=0.55)
@@ -252,7 +251,7 @@ if menu == "🏠 Dashboard Executive":
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col2:
-        st.markdown('<div class="section-card"><div class="section-title">🏭 Distribusi Risiko per Gardu Induk</div>',
+        st.markdown('<div class="section-card"><div class="section-title">Distribusi Risiko per Gardu Induk</div>',
                     unsafe_allow_html=True)
         gi_s = df_view.groupby(['GI', 'STATUS_RISIKO']).size().reset_index(name='Jumlah')
         fig  = px.bar(gi_s, x='GI', y='Jumlah', color='STATUS_RISIKO',
@@ -267,7 +266,7 @@ if menu == "🏠 Dashboard Executive":
     # ── Row 2 ──────────────────────────────────────────────────────────────────
     col3, col4 = st.columns(2)
     with col3:
-        st.markdown('<div class="section-card"><div class="section-title">🏗️ Sebaran Umur Aset per Kategori</div>',
+        st.markdown('<div class="section-card"><div class="section-title">Sebaran Umur Aset per Kategori</div>',
                     unsafe_allow_html=True)
         ks  = df_view.groupby(['KATEGORI_UMUR', 'STATUS_RISIKO']).size().reset_index(name='Jumlah')
         fig = px.bar(ks, x='KATEGORI_UMUR', y='Jumlah', color='STATUS_RISIKO',
@@ -282,7 +281,7 @@ if menu == "🏠 Dashboard Executive":
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col4:
-        st.markdown('<div class="section-card"><div class="section-title">🌫️ Distribusi Level Polutan Isolator</div>',
+        st.markdown('<div class="section-card"><div class="section-title">Distribusi Level Polutan Isolator</div>',
                     unsafe_allow_html=True)
         pc  = df_view['POLUTAN ISOLATOR'].value_counts().reset_index()
         pc.columns = ['Polutan', 'Jumlah']
@@ -297,7 +296,7 @@ if menu == "🏠 Dashboard Executive":
         st.markdown('</div>', unsafe_allow_html=True)
 
     # ── Top-10 Kritis ──────────────────────────────────────────────────────────
-    st.markdown('<div class="section-card"><div class="section-title">🚨 10 Tower Prioritas Kritis – Butuh SPK Segera</div>',
+    st.markdown('<div class="section-card"><div class="section-title">10 Tower Prioritas Kritis – Butuh SPK Segera</div>',
                 unsafe_allow_html=True)
     kdf = df_view[df_view['STATUS_RISIKO'] == 'Kritis'][[
         'NAMA TOWER', 'GI', 'NOMOR TOWER', 'HALAMAN TOWER',
@@ -314,14 +313,14 @@ if menu == "🏠 Dashboard Executive":
 # ══════════════════════════════════════════════════════════════════════════════
 # PAGE 2 – VISUALISASI DATA
 # ══════════════════════════════════════════════════════════════════════════════
-elif menu == "📊 Visualisasi Data":
+elif menu == "Visualisasi Data":
     pln_header("📊", "Visualisasi & Eksplorasi Data Aset",
                "Analisis mendalam kondisi jaringan transmisi")
 
     tab1, tab2, tab3 = st.tabs([
-        "📈 Distribusi & Sebaran",
-        "🏭 Analisis per GI",
-        "⏳ Umur & Polutan"
+        "Distribusi & Sebaran",
+        "Analisis per GI",
+        "Umur & Polutan"
     ])
 
     # ── Tab 1 ──────────────────────────────────────────────────────────────────
@@ -518,7 +517,7 @@ elif menu == "📊 Visualisasi Data":
 # ══════════════════════════════════════════════════════════════════════════════
 # PAGE 3 – PREDIKSI AI (ML)
 # ══════════════════════════════════════════════════════════════════════════════
-elif menu == "🤖 Prediksi AI (ML)":
+elif menu == "Prediksi AI (ML)":
     pln_header("🤖", "Predictive Maintenance – AI Asset Risk",
                "Ensemble: Random Forest + Gradient Boosting | 5-Fold Cross Validation")
 
@@ -539,7 +538,7 @@ elif menu == "🤖 Prediksi AI (ML)":
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.markdown('<div class="section-card"><div class="section-title">🔢 Confusion Matrix</div>',
+        st.markdown('<div class="section-card"><div class="section-title">Confusion Matrix</div>',
                     unsafe_allow_html=True)
         fig = px.imshow(cm_mat, text_auto=True, aspect='auto',
                         x=present_names, y=present_names,
@@ -553,7 +552,7 @@ elif menu == "🤖 Prediksi AI (ML)":
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col2:
-        st.markdown('<div class="section-card"><div class="section-title">📊 Feature Importance</div>',
+        st.markdown('<div class="section-card"><div class="section-title">Feature Importance</div>',
                     unsafe_allow_html=True)
         fi_df = pd.DataFrame({'Fitur': list(feat_imp.keys()),
                                'Importance': list(feat_imp.values())
@@ -569,7 +568,7 @@ elif menu == "🤖 Prediksi AI (ML)":
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col3:
-        st.markdown('<div class="section-card"><div class="section-title">📉 CV Score per Fold</div>',
+        st.markdown('<div class="section-card"><div class="section-title">CV Score per Fold</div>',
                     unsafe_allow_html=True)
         n_folds = len(cv_scores)
         fold_df = pd.DataFrame({
@@ -591,7 +590,7 @@ elif menu == "🤖 Prediksi AI (ML)":
         st.markdown('</div>', unsafe_allow_html=True)
 
     # Classification Report
-    with st.expander("📋 Lihat Classification Report Lengkap"):
+    with st.expander("Lihat Classification Report Lengkap"):
         rpt_rows = []
         for cls in ['Aman', 'Waspada', 'Kritis']:
             rpt_rows.append({
@@ -607,19 +606,19 @@ elif menu == "🤖 Prediksi AI (ML)":
     st.markdown("---")
 
     # ── Form Prediksi ──────────────────────────────────────────────────────────
-    st.subheader("🔮 Simulasi Prediksi Aset Baru")
+    st.subheader("Simulasi Prediksi Aset Baru")
     st.markdown('<div class="section-card">', unsafe_allow_html=True)
 
     fc1, fc2, fc3, fc4 = st.columns(4)
-    with fc1: in_umur    = st.number_input("⏳ Umur Aset (Tahun)", 0, 60, 10, 1)
-    with fc2: in_gi      = st.selectbox("🏭 Gardu Induk (GI)",
+    with fc1: in_umur    = st.number_input("Umur Aset (Tahun)", 0, 60, 10, 1)
+    with fc2: in_gi      = st.selectbox("Gardu Induk (GI)",
                                          sorted(df['GI'].dropna().unique()))
-    with fc3: in_halaman = st.selectbox("🌿 Kondisi Halaman",
+    with fc3: in_halaman = st.selectbox("Kondisi Halaman",
                                          df['HALAMAN TOWER'].unique())
-    with fc4: in_polutan = st.selectbox("🌫️ Tingkat Polutan",
+    with fc4: in_polutan = st.selectbox("Tingkat Polutan",
                                          df['POLUTAN ISOLATOR'].unique())
 
-    if st.button("⚡ Prediksi Risiko Aset", use_container_width=True):
+    if st.button("Prediksi Risiko Aset", use_container_width=True):
         try:
             gi_enc  = encoders['GI'].transform([str(in_gi)])[0]
             hal_enc = encoders['HALAMAN TOWER'].transform([in_halaman])[0]
@@ -635,11 +634,11 @@ elif menu == "🤖 Prediksi AI (ML)":
                 prob_map[c] = p
 
             label_map = {
-                0: ('AMAN ✅',    SUCCESS,    'white'),
-                1: ('WASPADA ⚠️', PLN_YELLOW, '#222'),
+                0: ('AMAN ',    SUCCESS,    'white'),
+                1: ('WASPADA ', PLN_YELLOW, '#222'),
                 2: ('KRITIS 🚨',  DANGER,     'white'),
             }
-            lbl, col_res, tcol = label_map.get(pred, ('AMAN ✅', SUCCESS, 'white'))
+            lbl, col_res, tcol = label_map.get(pred, ('AMAN ', SUCCESS, 'white'))
 
             st.markdown(f"""
             <div style="background:{col_res};color:{tcol};border-radius:12px;
@@ -676,7 +675,7 @@ elif menu == "🤖 Prediksi AI (ML)":
             st.plotly_chart(fig, use_container_width=True)
 
         except ValueError as e:
-            st.error(f"❌ Error: {e} — pastikan nilai input ada dalam data latih.")
+            st.error(f"Error: {e} — pastikan nilai input ada dalam data latih.")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -684,7 +683,7 @@ elif menu == "🤖 Prediksi AI (ML)":
 # ══════════════════════════════════════════════════════════════════════════════
 # PAGE 4 – DATA INSPEKSI LENGKAP
 # ══════════════════════════════════════════════════════════════════════════════
-elif menu == "📋 Data Inspeksi Lengkap":
+elif menu == "Data Inspeksi Lengkap":
     pln_header("📋", "Data Inspeksi Aset Lengkap",
                "Tabel interaktif seluruh data tower – filter, scroll, & export")
 
@@ -698,7 +697,7 @@ elif menu == "📋 Data Inspeksi Lengkap":
         u_max = int(df_view['UMUR_ASET'].max())
         f_umur = st.slider("Filter Umur Aset (Tahun)", u_min, u_max, (u_min, u_max))
     with fc3:
-        srch = st.text_input("🔍 Cari Nama / Nomor Tower", "")
+        srch = st.text_input("Cari Nama / Nomor Tower", "")
 
     tbl = df_view[df_view['STATUS_RISIKO'].isin(f_status)].copy()
     tbl = tbl[(tbl['UMUR_ASET'] >= f_umur[0]) & (tbl['UMUR_ASET'] <= f_umur[1])]
@@ -725,6 +724,6 @@ elif menu == "📋 Data Inspeksi Lengkap":
     )
 
     csv = tbl[cols_ok].to_csv(index=False).encode('utf-8')
-    st.download_button("⬇️ Download Data (CSV)", csv,
+    st.download_button("Download Data (CSV)", csv,
                         "inspeksi_tower.csv", "text/csv",
                         use_container_width=True)
