@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 import joblib
 import pandas as pd
 from collections import Counter
@@ -12,8 +12,32 @@ from sklearn.preprocessing import LabelEncoder
 import streamlit as st
 
 # ── Path file model ────────────────────────────────────────────────────────────
-MODEL_PATH   = "model_pln_ensemble.pkl"
-ENCODER_PATH = "encoders_pln.pkl"
+BASE_DIR = Path(__file__).resolve().parent
+MODEL_PATH = BASE_DIR / "model_pln_ensemble.pkl"
+ENCODER_PATH = BASE_DIR / "encoders_pln.pkl"
+
+
+def _build_model():
+    rf = RandomForestClassifier(
+        n_estimators=300, max_depth=15,
+        min_samples_leaf=2, class_weight='balanced', random_state=42)
+    gb = GradientBoostingClassifier(
+        n_estimators=200, max_depth=5,
+        learning_rate=0.05, subsample=0.8, random_state=42)
+    return VotingClassifier(
+        estimators=[('rf', rf), ('gb', gb)], voting='soft')
+
+
+def _train_model(X_tr, y_tr, encoders):
+    vc = _build_model()
+    vc.fit(X_tr, y_tr)
+    try:
+        joblib.dump(vc, MODEL_PATH)
+        joblib.dump(encoders, ENCODER_PATH)
+    except OSError:
+        # Streamlit Cloud can run from a read-only checkout; keep using memory.
+        pass
+    return vc
 
 @st.cache_resource
 def train_ml_pipeline(df: pd.DataFrame, data_hash: int):
@@ -53,20 +77,17 @@ def train_ml_pipeline(df: pd.DataFrame, data_hash: int):
         X, y, test_size=0.2, random_state=42, stratify=strat)
 
     # ── Load atau Training model ──────────────────────────────────────────────
-    if os.path.exists(MODEL_PATH) and os.path.exists(ENCODER_PATH):
-        vc = joblib.load(MODEL_PATH)            # ← load dari disk
+    if MODEL_PATH.exists() and ENCODER_PATH.exists():
+        try:
+            vc = joblib.load(MODEL_PATH)
+        except (ModuleNotFoundError, ImportError, AttributeError, ValueError, OSError):
+            st.warning(
+                "Model tersimpan tidak kompatibel dengan environment saat ini. "
+                "Aplikasi melatih ulang model otomatis."
+            )
+            vc = _train_model(X_tr, y_tr, encoders)
     else:
-        rf = RandomForestClassifier(
-            n_estimators=300, max_depth=15,
-            min_samples_leaf=2, class_weight='balanced', random_state=42)
-        gb = GradientBoostingClassifier(
-            n_estimators=200, max_depth=5,
-            learning_rate=0.05, subsample=0.8, random_state=42)
-        vc = VotingClassifier(
-            estimators=[('rf', rf), ('gb', gb)], voting='soft')
-        vc.fit(X_tr, y_tr)
-        joblib.dump(vc, MODEL_PATH)             # ← simpan ke disk
-        joblib.dump(encoders, ENCODER_PATH)
+        vc = _train_model(X_tr, y_tr, encoders)
 
     # ── Evaluasi ──────────────────────────────────────────────────────────────
     y_pred = vc.predict(X_te)
