@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 import joblib
 import pandas as pd
@@ -15,6 +16,7 @@ import streamlit as st
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_PATH = BASE_DIR / "model_pln_ensemble.pkl"
 ENCODER_PATH = BASE_DIR / "encoders_pln.pkl"
+USE_SAVED_MODEL = os.environ.get("USE_SAVED_MODEL") == "1"
 
 
 def _build_model():
@@ -77,7 +79,9 @@ def train_ml_pipeline(df: pd.DataFrame, data_hash: int):
         X, y, test_size=0.2, random_state=42, stratify=strat)
 
     # ── Load atau Training model ──────────────────────────────────────────────
-    if MODEL_PATH.exists() and ENCODER_PATH.exists():
+    if not USE_SAVED_MODEL:
+        vc = _train_model(X_tr, y_tr, encoders)
+    elif MODEL_PATH.exists() and ENCODER_PATH.exists():
         try:
             vc = joblib.load(MODEL_PATH)
         except (ModuleNotFoundError, ImportError, AttributeError, ValueError, OSError):
