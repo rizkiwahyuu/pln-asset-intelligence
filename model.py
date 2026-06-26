@@ -33,12 +33,13 @@ def _build_model():
 def _train_model(X_tr, y_tr, encoders):
     vc = _build_model()
     vc.fit(X_tr, y_tr)
-    try:
-        joblib.dump(vc, MODEL_PATH)
-        joblib.dump(encoders, ENCODER_PATH)
-    except OSError:
-        # Streamlit Cloud can run from a read-only checkout; keep using memory.
-        pass
+    if USE_SAVED_MODEL:
+        try:
+            joblib.dump(vc, MODEL_PATH)
+            joblib.dump(encoders, ENCODER_PATH)
+        except OSError:
+            # Streamlit Cloud can run from a read-only checkout; keep using memory.
+            pass
     return vc
 
 @st.cache_resource
